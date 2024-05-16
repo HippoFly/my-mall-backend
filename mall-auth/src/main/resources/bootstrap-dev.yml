@@ -3,7 +3,9 @@ spring:
     nacos:
       discovery:
         server-addr: http://localhost:8848
+        namespace: mall
       config:
+        namespace: mall
         server-addr: http://localhost:8848
         file-extension: yaml
 logging:
