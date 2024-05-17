@@ -19,7 +19,6 @@ import com.macro.mall.model.UmsMemberLevelExample;
 import com.macro.mall.portal.service.AuthService;
 import com.macro.mall.portal.service.UmsMemberCacheService;
 import com.macro.mall.portal.service.UmsMemberService;
-import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,16 +131,15 @@ public class UmsMemberServiceImpl implements UmsMemberService {
 
     @Override
     public UmsMember getCurrentMember() {
-        String userStr = request.getHeader(AuthConstant.USER_TOKEN_HEADER);
-        if(StrUtil.isEmpty(userStr)){
+        String userId = request.getHeader(AuthConstant.USER_ID);
+        if(StrUtil.isEmpty(userId)){
             Asserts.fail(ResultCode.UNAUTHORIZED);
         }
-        UserDto userDto = JSONUtil.toBean(userStr, UserDto.class);
-        UmsMember member = memberCacheService.getMember(userDto.getId());
+        UmsMember member = memberCacheService.getMember(Long.valueOf(userId));
         if(member!=null){
             return member;
         }else{
-            member = getById(userDto.getId());
+            member = getById(Long.valueOf(userId));
             memberCacheService.setMember(member);
             return member;
         }
@@ -179,7 +177,14 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         params.put("grant_type","password");
         params.put("username",username);
         params.put("password",password);
-        return authService.getAccessToken(params);
+        CommonResult accessToken = authService.getAccessToken(params);
+        Object tokenData = accessToken.getData();
+        if(tokenData instanceof Map){
+        UmsMember umsMember =getByUsername(username);
+            Map<String, Object> data = ( Map<String, Object>) tokenData;
+            data.put("userId", umsMember.getId().toString());
+        }
+        return accessToken;
     }
 
     //对输入的验证码进行校验
