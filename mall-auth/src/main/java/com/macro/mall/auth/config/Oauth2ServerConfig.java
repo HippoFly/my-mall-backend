@@ -40,11 +40,11 @@ public class Oauth2ServerConfig extends AuthorizationServerConfigurerAdapter {
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
                 .withClient("admin-app")
-                .secret(passwordEncoder.encode("123456"))
-                .scopes("all")
-                .authorizedGrantTypes("password", "refresh_token")
-                .accessTokenValiditySeconds(3600*24)
-                .refreshTokenValiditySeconds(3600*24*7)
+                .secret(passwordEncoder.encode("123456"))//客户端密钥使用passwordEncoder.encode("123456")进行加密
+                .scopes("all")//客户端范围（scopes）设置为"all"，表示可以访问所有的资源
+                .authorizedGrantTypes("password", "refresh_token") //授权类型（authorizedGrantTypes）设置为密码模式（"password"）和刷新令牌模式（"refresh_token"）
+                .accessTokenValiditySeconds(3600*24) //访问令牌有效期设置为1天（3600秒 * 24小时）
+                .refreshTokenValiditySeconds(3600*24*7) //刷新令牌有效期设置为7天（3600秒 * 24小时 * 7天）
                 .and()
                 .withClient("portal-app")
                 .secret(passwordEncoder.encode("123456"))

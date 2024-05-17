@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * 网关白名单配置
+ * 从yml配置文件得到
  * Created by macro on 2020/6/17.
  */
 @Data
