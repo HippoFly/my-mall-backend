@@ -1,18 +1,24 @@
+# 用来配置环境中间件的文件
 version: '3'
 services:
+  # 会按顺序执行，如果本地没有会从服务器寻求images
   mysql:
-    image: mysql:5.7
+    image: mysql:8
     container_name: mysql
+
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root #设置root帐号密码
+    # 左宿主:右边容器内
     ports:
       - 3306:3306
+    # 左宿主:右边是容器内
     volumes:
       - /mydata/mysql/data/db:/var/lib/mysql #数据文件挂载
       - /mydata/mysql/data/conf:/etc/mysql/conf.d #配置文件挂载
       - /mydata/mysql/log:/var/log/mysql #日志文件挂载
+  # docker run -d --name redis -p 6379:6379 -v /mydata/redis/data:/data redis:7 redis-server --appendonly yes
   redis:
     image: redis:7
     container_name: redis
