@@ -1,0 +1,17 @@
+# Logstash configuration file
+
+# Path to the directory containing the pipeline configuration files
+path.config: "/usr/share/logstash/pipeline"
+
+# Path to the directory where Logstash will store its logs
+path.logs: "/var/log/logstash"
+
+# The number of pipeline workers
+pipeline.workers: 2
+
+# The number of events to process in one batch
+pipeline.batch.size: 125
+pipeline.batch.delay: 50
+
+# Set the logging level
+log.level: debug

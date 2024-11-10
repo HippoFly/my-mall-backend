@@ -1,5 +1,5 @@
 # 用来配置环境中间件的文件
-version: '3'
+version: '3.4'
 services:
   # 会按顺序执行，如果本地没有会从服务器寻求images
   mysql:
@@ -12,69 +12,68 @@ services:
       MYSQL_ROOT_PASSWORD: root #设置root帐号密码
     # 左宿主:右边容器内
     ports:
-      - 3306:3306
+      - "3306:3306"
     # 左宿主:右边是容器内
     volumes:
-      - /mydata/mysql/data/db:/var/lib/mysql #数据文件挂载
-      - /mydata/mysql/data/conf:/etc/mysql/conf.d #配置文件挂载
-      - /mydata/mysql/log:/var/log/mysql #日志文件挂载
+      - ./mydata/mysql/data/db:/var/lib/mysql #数据文件挂载
+      - ./mydata/mysql/data/conf:/etc/mysql/conf.d #配置文件挂载
+      - ./mydata/mysql/log:/var/log/mysql #日志文件挂载
   # docker run -d --name redis -p 6379:6379 -v /mydata/redis/data:/data redis:7 redis-server --appendonly yes
   redis:
     image: redis:7
     container_name: redis
     command: redis-server --appendonly yes
     volumes:
-      - /mydata/redis/data:/data #数据文件挂载
+      - ./mydata/redis/data:/data #数据文件挂载
     ports:
-      - 6379:6379
+      - "6379:6379"
   nginx:
     image: nginx:1.22
     container_name: nginx
     volumes:
-      - /mydata/nginx/conf:/etc/nginx #配置文件挂载
-      - /mydata/nginx/html:/usr/share/nginx/html #静态资源根目录挂载
-      - /mydata/nginx/log:/var/log/nginx #日志文件挂载
+      - ./mydata/nginx/conf:/etc/nginx #配置文件挂载
+      - ./mydata/nginx/html:/usr/share/nginx/html #静态资源根目录挂载
+      - ./mydata/nginx/log:/var/log/nginx #日志文件挂载
     ports:
-      - 80:80
+      - "80:80"
   rabbitmq:
     image: rabbitmq:3.9-management
     container_name: rabbitmq
+    user: root  # 使用 root 用户启动容器
     volumes:
-      - /mydata/rabbitmq/data:/var/lib/rabbitmq #数据文件挂载
-      - /mydata/rabbitmq/log:/var/log/rabbitmq #日志文件挂载
+      - ./mydata/rabbitmq/data:/var/lib/rabbitmq
+      - ./mydata/rabbitmq/log:/var/log/rabbitmq
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "15672:15672"
+      - "5672:5672"
+    command: |
+      bash -c "
+      chown -R rabbitmq:rabbitmq /var/log/rabbitmq &&
+      chmod -R 755 /var/log/rabbitmq &&
+      rabbitmq-server"
   elasticsearch:
     image: elasticsearch:7.17.3
     container_name: elasticsearch
-    user: root
+    user: root  # 以 root 用户启动以确保有权限修改目录
     environment:
-      - "cluster.name=elasticsearch" #设置集群名称为elasticsearch
-      - "discovery.type=single-node" #以单一节点模式启动
-      - "ES_JAVA_OPTS=-Xms512m -Xmx1024m" #设置使用jvm内存大小
+      - "cluster.name=elasticsearch"  # 设置集群名称
+      - "discovery.type=single-node"  # 单节点模式
+      - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"  # JVM 内存配置
     volumes:
-      - /mydata/elasticsearch/plugins:/usr/share/elasticsearch/plugins #插件文件挂载
-      - /mydata/elasticsearch/data:/usr/share/elasticsearch/data #数据文件挂载
+      - ./mydata/elasticsearch/plugins:/usr/share/elasticsearch/plugins  # 插件文件挂载
+      - ./mydata/elasticsearch/data:/usr/share/elasticsearch/data  # 数据文件挂载
     ports:
-      - 9200:9200
-      - 9300:9300
-  logstash:
-    image: logstash:7.17.3
-    container_name: logstash
-    environment:
-      - TZ=Asia/Shanghai
-    volumes:
-      - /mydata/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf #挂载logstash的配置文件
-    depends_on:
-      - elasticsearch #kibana在elasticsearch启动之后再启动
-    links:
-      - elasticsearch:es #可以用es这个域名访问elasticsearch服务
-    ports:
-      - 4560:4560
-      - 4561:4561
-      - 4562:4562
-      - 4563:4563
+      - "9200:9200"
+      - "9300:9300"
+    entrypoint: >
+      sh -c "chown -R elasticsearch:elasticsearch /usr/share/elasticsearch/data &&
+             /bin/tini -- /usr/local/bin/docker-entrypoint.sh elasticsearch"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200/_cluster/health" ]
+      interval: 30s
+      retries: 3
+      start_period: 20s
+      timeout: 10s
   kibana:
     image: kibana:7.17.3
     container_name: kibana
@@ -85,18 +84,44 @@ services:
     environment:
       - "elasticsearch.hosts=http://es:9200" #设置访问elasticsearch的地址
     ports:
-      - 5601:5601
+      - "5601:5601"
+
+  logstash:
+    image: logstash:7.17.3
+    container_name: logstash
+    environment:
+      - "LS_JAVA_OPTS=-Xms512m -Xmx1024m"  # Logstash JVM 内存配置
+      - "LOGSTASH_HTTP_HOST=0.0.0.0"  # 允许外部访问 Logstash HTTP 输入
+    volumes:
+      - ./mydata/logstash/config:/usr/share/logstash/config  # Logstash 配置文件挂载
+      - ./mydata/logstash/pipeline:/usr/share/logstash/pipeline  # Logstash pipeline 配置挂载
+    ports:
+      - "5044:5044"  # Logstash Beats 输入端口
+      - "9600:9600"  # Logstash HTTP 管理端口
+    depends_on:
+      - elasticsearch  # 确保 Elasticsearch 启动后再启动 Logstash
+    user: root
+    command: >
+      bash -c "chown -R logstash:logstash /usr/share/logstash/config &&
+               chown -R logstash:logstash /usr/share/logstash/pipeline &&
+               /usr/share/logstash/bin/logstash -f /usr/share/logstash/pipeline/logstash.conf"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9600/_node/stats"]
+      interval: 30s
+      retries: 3
+      timeout: 10s
+
   mongo:
     image: mongo:4
     container_name: mongo
     volumes:
-      - /mydata/mongo/db:/data/db #数据文件挂载
+      - ./mydata/mongo/db:/data/db #数据文件挂载
     ports:
-      - 27017:27017
+      - "27017:27017"
   nacos-registry:
     image: nacos/nacos-server:v2.1.0
     container_name: nacos-registry
     environment:
       - "MODE=standalone"
     ports:
-      - 8848:8848
+      - "8848:8848"
