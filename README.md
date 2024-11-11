@@ -52,7 +52,7 @@
 
 ### 组织结构
 
-``` lua
+```lua
 mall
 ├── mall-common -- 工具类及通用代码模块
 ├── mall-mbg -- MyBatisGenerator生成的数据库操作代码模块
@@ -70,8 +70,9 @@ mall
 
 ### 后端技术
 
+
 | 技术                   | 说明                 | 官网                                                 |
-| ---------------------- | -------------------- | ---------------------------------------------------- |
+| ------------------------ | ---------------------- | ------------------------------------------------------ |
 | Spring Cloud           | 微服务框架           | https://spring.io/projects/spring-cloud              |
 | Spring Cloud Alibaba   | 微服务框架           | https://github.com/alibaba/spring-cloud-alibaba      |
 | Spring Boot            | 容器+MVC框架         | https://spring.io/projects/spring-boot               |
@@ -98,8 +99,9 @@ mall
 
 ### 前端技术
 
+
 | 技术       | 说明                  | 官网                           |
-| ---------- | --------------------- | ------------------------------ |
+| ------------ | ----------------------- | -------------------------------- |
 | Vue        | 前端框架              | https://vuejs.org/             |
 | Vue-router | 路由框架              | https://router.vuejs.org/      |
 | Vuex       | 全局状态管理框架      | https://vuex.vuejs.org/        |
@@ -109,8 +111,9 @@ mall
 
 ### 移动端技术
 
+
 | 技术         | 说明             | 官网                                    |
-| ------------ | ---------------- | --------------------------------------- |
+| -------------- | ------------------ | ----------------------------------------- |
 | Vue          | 核心前端框架     | https://vuejs.org                       |
 | Vuex         | 全局状态管理框架 | https://vuex.vuejs.org                  |
 | uni-app      | 移动端前端框架   | https://uniapp.dcloud.io                |
@@ -121,17 +124,18 @@ mall
 
 ### 开发环境
 
-| 工具          | 版本号 | 下载                                                         |
-| ------------- | ------ | ------------------------------------------------------------ |
+
+| 工具          | 版本号 | 下载                                                                                 |
+| --------------- | -------- | -------------------------------------------------------------------------------------- |
 | JDK           | 1.8    | https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html |
-| Mysql         | 5.7    | https://www.mysql.com/                                       |
-| Redis         | 7.0    | https://redis.io/download                                    |
-| Elasticsearch | 7.17.3 | https://www.elastic.co/cn/downloads/elasticsearch            |
-| Kibana        | 7.17.3 | https://www.elastic.co/cn/downloads/kibana                   |
-| Logstash      | 7.17.3 | https://www.elastic.co/cn/downloads/logstash                 |
-| MongoDb       | 5.0    | https://www.mongodb.com/download-center                      |
-| RabbitMq      | 3.10.5 | http://www.rabbitmq.com/download.html                        |
-| nginx         | 1.22   | http://nginx.org/en/download.html                            |
+| Mysql         | 5.7    | https://www.mysql.com/                                                               |
+| Redis         | 7.0    | https://redis.io/download                                                            |
+| Elasticsearch | 7.17.3 | https://www.elastic.co/cn/downloads/elasticsearch                                    |
+| Kibana        | 7.17.3 | https://www.elastic.co/cn/downloads/kibana                                           |
+| Logstash      | 7.17.3 | https://www.elastic.co/cn/downloads/logstash                                         |
+| MongoDb       | 5.0    | https://www.mongodb.com/download-center                                              |
+| RabbitMq      | 3.10.5 | http://www.rabbitmq.com/download.html                                                |
+| nginx         | 1.22   | http://nginx.org/en/download.html                                                    |
 
 ### 搭建步骤
 

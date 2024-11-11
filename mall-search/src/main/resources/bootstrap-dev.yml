@@ -4,7 +4,9 @@ spring:
       discovery:
         server-addr: http://localhost:8848
         namespace: mall
+        group: dev
       config:
         namespace: mall
         server-addr: http://localhost:8848
         file-extension: yaml
+        group: dev

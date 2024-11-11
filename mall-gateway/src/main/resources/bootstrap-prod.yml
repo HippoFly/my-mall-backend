@@ -2,7 +2,11 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: http://nacos-registry:8848
+        namespace: mall
+        server-addr: http://nacos:8848
+        group: prod
       config:
-        server-addr: http://nacos-registry:8848
+        namespace: mall
+        server-addr: http://nacos:8848
         file-extension: yaml
+        group: prod

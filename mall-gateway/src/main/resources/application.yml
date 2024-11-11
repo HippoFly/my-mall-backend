@@ -20,7 +20,7 @@ spring:
         - id: mall-admin
           uri: lb://mall-admin
           predicates:
-            - Path=/mall-admin/**
+            - Path=/mall-admin/**,/admin/**
           filters:
             - StripPrefix=1
         - id: mall-portal
@@ -53,7 +53,7 @@ spring:
     password: 123456
 secure:
   ignore:
-    urls: #配置白名单路径
+    urls:
       - "/doc.html"
       - "/swagger-resources/**"
       - "/swagger/**"

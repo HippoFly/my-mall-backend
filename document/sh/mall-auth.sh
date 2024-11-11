@@ -7,7 +7,7 @@ echo '----rm container----'
 docker rmi `docker images | grep none | awk '{print $3}'`
 echo '----rm none images----'
 docker run -p 8401:8401 --name ${app_name} \
---link nacos-registry:nacos-registry \
+--link nacos:nacos \
 -e TZ="Asia/Shanghai" \
 -v /etc/localtime:/etc/localtime \
 -v /mydata/app/${app_name}/logs:/var/logs \
